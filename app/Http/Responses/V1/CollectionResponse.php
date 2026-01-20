@@ -13,14 +13,8 @@ use Illuminate\Pagination\Paginator;
 final class CollectionResponse implements Responsable
 {
     public function __construct(private String $key,
-    
     private Paginator $paginator,
-    
-    
-    private  AnonymousResourceCollection $collection, private int $status = JsonResponse::HTTP_OK)
-    {
-        $this->collection = $collection;
-    }
+    private  AnonymousResourceCollection $collection, private int $status = JsonResponse::HTTP_OK){}
 
 
     public function toResponse($request)
@@ -38,5 +32,5 @@ final class CollectionResponse implements Responsable
             status:$this->status,
         );
     }
-    
+
 }
