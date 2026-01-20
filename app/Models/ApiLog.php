@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApiLog extends Model
 {
-    
+
 
 protected $guarded = [];
 
@@ -19,7 +19,7 @@ protected $guarded = [];
         'duration' => 'integer',
         'request' => 'json',
         'response' => 'json',
-        'token'=>'encrypted',
+
     ];
 
 

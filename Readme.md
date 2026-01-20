@@ -15,3 +15,8 @@ Api Design Guidelines Version
 - Cache
 - Better Response
 - Better Error Handling
+- Dto Validation
+- Versioning
+- write operation jobs
+- Logging 
+

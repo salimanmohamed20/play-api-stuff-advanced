@@ -18,21 +18,21 @@ use App\Http\Responses\V1\MessageResponse;
 use App\Jobs\Books\V1\CreateBook as V1CreateBook;
 use Symfony\Component\HttpFoundation\Response;
 
-class StoreBookController 
+class StoreBookController
 {
 
     public function __construct(private Dispatcher $bus)
     {
-       
-        
+
+
     }
     public function __invoke(StoreBookRequest $request)
     {
         \Illuminate\Support\defer(
-         callback:fn()=>$this->bus->dispatch(command:new V1CreateBook($request->payloads(),(string)1),)
+         callback:fn()=>$this->bus->dispatch(command:new V1CreateBook($request->payloads(),(string) auth()->id()),)
         );
-    
+
         return new MessageResponse('Book created successfully',Response::HTTP_ACCEPTED);
-        
+
     }
 }

@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-Route::middleware('api-log')
+Route::post('/login', AuthController::class);
+Route::middleware(['api-log'])
     ->prefix('v1')
     ->as('v1.')
     ->group(function () {

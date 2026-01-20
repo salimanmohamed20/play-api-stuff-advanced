@@ -20,7 +20,7 @@ class CreateBook implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public readonly NewBook $book, public string $user)
+    public function __construct(public readonly NewBook $book, public readonly string $user)
     {
         //
     }
@@ -30,8 +30,8 @@ class CreateBook implements ShouldQueue
      */
     public function handle(CreateBookAction $action): void
     {
-        
+
         $action->handle($this->book);
-      
+
     }
 }

@@ -7,38 +7,55 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\ApiLog;
 
-
-
 class ApiLogMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
+        $start = microtime(true);
 
-         $start = microtime(true);
+
+        $requestId = $request->fingerprint();
+        $uri       = $request->path();
+        $method    = $request->method();
+        $token     = $request->bearerToken();
+        $userId    = auth()->id();
+        $payload   = $request->except(['password', 'password_confirmation']);
 
         $response = $next($request);
 
-  \Illuminate\Support\defer(
-    fn()=>ApiLog::query()->create([
-        'request_id'=>$request->header('request-id') ?? (string) \Illuminate\Support\Str::uuid(),
-        'uri'=>$request->path(),
-        'method'=>$request->method(),
-        'status_code'=>$response->getStatusCode(),
-        'duration'=>round((microtime(true)-$start)*1000),
-        'request'=>$request->all(),
-        'response'=>json_decode($response->getContent(),true) ?? $response->getContent(),
-        'token'=>$request->header('token'),
-        'user_id'=>1,
-    ])
-  );
+        $status   = $response->getStatusCode();
+        $duration = round((microtime(true) - $start) * 1000);
 
+        $responseContent = rescue(
+            fn () => method_exists($response, 'getContent')
+                ? json_decode($response->getContent(), true)
+                : null,
+            null
+        );
 
-
+        \Illuminate\Support\defer(function () use (
+            $requestId,
+            $uri,
+            $method,
+            $status,
+            $duration,
+            $payload,
+            $responseContent,
+            $token,
+            $userId
+        ) {
+            ApiLog::create([
+                'request_id'  => $requestId,
+                'uri'         => $uri,
+                'method'      => $method,
+                'status_code' => $status,
+                'duration'    => $duration,
+                'request'     => $payload,
+                'response'    => $responseContent,
+                'token'       => $token,
+                'user_id'     => $userId,
+            ]);
+        });
 
         return $response;
     }
